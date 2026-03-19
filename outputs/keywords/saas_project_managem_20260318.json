@@ -1,0 +1,26 @@
+[
+  {
+    "keyword": "Best saas project management tool",
+    "intent": "informational",
+    "competition": "medium",
+    "priority_score": 9,
+    "reasoning": "This keyword has a clear intent to find the best tool, and while competition is medium, the specificity and implied intent to purchase make it a high-priority target. It's a popular search term with potential for conversion.",
+    "best_platform": "linkedin"
+  },
+  {
+    "keyword": "Saas project management tool free",
+    "intent": "transactional",
+    "competition": "medium",
+    "priority_score": 8,
+    "reasoning": "This keyword has a clear intent to find a free tool, and while competition is medium, the specificity makes it a valuable target. It's a popular search term with potential for conversion.",
+    "best_platform": "website"
+  },
+  {
+    "keyword": "Project management software",
+    "intent": "informational",
+    "competition": "high",
+    "priority_score": 6,
+    "reasoning": "This is a broad keyword with high competition, but it's still a fundamental term in the project management space. It's more informational than transactional, but still worth targeting.",
+    "best_platform": "linkedin"
+  }
+]

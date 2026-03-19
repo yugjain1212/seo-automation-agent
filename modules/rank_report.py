@@ -95,7 +95,17 @@ def generate_rank_report(site_url, keywords):
     if not service:
         print("❌ Search Console not available (missing credentials)")
         print("   Skipping rank report generation")
-        return {"current_week": [], "previous_week": [], "changes": []}
+        report = {
+            "current_week": [],
+            "previous_week": [],
+            "changes": [],
+            "generated": today,
+            "note": "Google Search Console credentials not configured. Add credentials.json to enable real rank tracking.",
+        }
+        output_file = f"outputs/reports/rank_report_{today}.json"
+        with open(output_file, "w") as f:
+            json.dump(report, f, indent=2)
+        return report
 
     current_data = fetch_keyword_rankings(site_url, keywords, days=7)
     previous_data = fetch_keyword_rankings(site_url, keywords, days=14)[

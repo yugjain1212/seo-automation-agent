@@ -151,16 +151,14 @@ python -m modules.rank_report
 - **GitHub API over FTP**: Real version control, free hosting via GitHub Pages, CI/CD ready
 - **BeautifulSoup over Selenium**: Lightweight, no browser needed, faster for simple audits
 
-## What I'd Improve
+## What I'd Improve With More Time or a Paid Budget
 
-1. **Paid SerpAPI** - Free tier has 100 searches/month limit; paid plans offer more for production use
+The most impactful upgrade would be replacing SerpAPI's free tier (capped at 100 searches/month) with a paid plan or integrating the Ahrefs API directly — this would give real keyword difficulty scores and accurate monthly search volumes instead of Groq's estimates, which are educated guesses at best.
 
-2. **Ahrefs/Semrush API** - Replace SerpAPI with dedicated keyword difficulty scores and volume data
+For content quality, I'd build a two-step generation pipeline: first generate a detailed outline with exact competitor word counts and semantic keyword targets, then generate the full page — this would significantly reduce thin content and improve topical depth.
 
-3. **WordPress REST API** - Deploy to WordPress CMS instead of static HTML for easier content management
+On deployment, the GitHub API works but it's a workaround. With more time I'd integrate the WordPress REST API so generated content deploys with proper URL slugs, internal linking, sitemap updates, and categories automatically — the way a real content team would expect.
 
-4. **DataForSEO** - Better for competitor rank tracking and SERP feature analysis
+For rank tracking, Google Search Console only shows your own site. I'd add DataForSEO's rank tracker API to monitor competitor positions weekly and trigger new content generation automatically when a competitor gains ground on a target keyword.
 
-5. **Slack Webhooks** - Real-time alerts when rankings drop significantly
-
-6. **A/B Testing** - Generate multiple content variants and track which ranks faster
+Finally I'd add a Slack webhook that fires alerts whenever a tracked page drops more than 3 positions, making this genuinely production-ready for a marketing team to rely on daily.

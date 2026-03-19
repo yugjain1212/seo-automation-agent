@@ -29,7 +29,11 @@ def fetch_autocomplete_keywords(seed_keyword):
         data = response.json()
 
         keywords = []
-        if "results" in data:
+        if "suggestions" in data:
+            for result in data.get("suggestions", []):
+                if "value" in result:
+                    keywords.append(result["value"])
+        elif "results" in data:
             for result in data.get("results", []):
                 if "phrase" in result:
                     keywords.append(result["phrase"])
@@ -99,7 +103,7 @@ Return ONLY valid JSON. No markdown. No backticks. No explanation."""
             raw_response = chat_completion.choices[0].message.content
             logger.info("Received response from Groq")
 
-            if "```" in raw_response:
+            if raw_response and "```" in raw_response:
                 raw_response = raw_response.split("```")[1]
                 if raw_response.startswith("json"):
                     raw_response = raw_response[4:]

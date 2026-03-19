@@ -62,24 +62,33 @@ def generate_website_page(keyword, gaps, niche, location):
     logger.info(f"Generating website page content for: {keyword}")
 
     missing_topics = gaps.get("missing_topics", [])
+    missing_angles = gaps.get("missing_angles", [])
     subtopics = gaps.get("subtopics_to_add", [])
 
-    prompt = f"""Generate SEO-optimized website page content for a {niche} business targeting {location}.
+    prompt = f"""You are an expert SEO copywriter for a {niche} startup in {location}. You are writing for founders and tech teams who need project management solutions.
 
-Target Keyword: {keyword}
-Missing Topics from competitors: {", ".join(missing_topics)}
-Subtopics to add: {", ".join(subtopics)}
+Target keyword: "{keyword}"
+Location context: This page targets {location} specifically — mention local startup ecosystem, tech hubs like Koramangala/Indiranagar where relevant, and India-specific pricing in INR.
+
+Your competitors rank #1-5 but are MISSING these topics — you MUST cover all of them to outrank them:
+{json.dumps(missing_topics, indent=2)}
+
+These unique angles no competitor uses — include them:
+{json.dumps(missing_angles, indent=2)}
+
+Subtopics to add:
+{json.dumps(subtopics, indent=2)}
+
+Write content that sounds like it was written by a {location} startup founder, not a generic AI. Include specific examples, real pain points of Indian SaaS teams, and actionable advice. Use terms like "starting at ₹X/month", mention Bangalore-based teams, and reference the local tech ecosystem.
 
 Return a JSON object with:
 - title: SEO title (50-60 characters, must contain keyword)
 - meta_description: Meta description (150-160 characters)
 - h1: Compelling H1 (different from title)
-- content: Full HTML body content (800-1200 words with h2/h3 subheadings, covering ALL missing_topics)
+- content: Full HTML body content (800-1200 words with h2/h3 subheadings, covering ALL missing_topics from competitors)
 - schema_markup: JSON-LD schema as string (SoftwareApplication type)
 - focus_keyword: the main target keyword
 - secondary_keywords: list of 5 secondary keywords
-
-IMPORTANT: Content must be specific to {niche} in {location}. NEVER generic. Cover all the missing topics.
 
 Return ONLY valid JSON. No markdown. No backticks. No explanation."""
 
@@ -89,16 +98,20 @@ Return ONLY valid JSON. No markdown. No backticks. No explanation."""
 def generate_gmb_post(keyword, niche, location):
     logger.info(f"Generating GMB post for: {keyword}")
 
-    prompt = f"""Generate a Google My Business post for a {niche} business targeting {location}.
+    prompt = f"""You are a {niche} business owner in {location}. Write a Google My Business post that feels authentic and local.
 
 Target Keyword: {keyword}
 
+Write like a real {location} startup founder. Mention:
+- Local Bangalore context (tech hubs, startup culture, India-specific benefits)
+- Pricing in INR ("starting at ₹X/month")
+- Why this matters for Indian teams and businesses
+- Genuine local relevance, not generic corporate speak
+
 Return a JSON object with:
-- post_text: 150-300 words, localized content mentioning Bangalore, India
+- post_text: 150-300 words, localized content mentioning {location}
 - cta_type: one of "learn_more", "book", "sign_up", "call"
 - category: one of "update", "offer", "event"
-
-Make it engaging and specific to {niche} in Bangalore.
 
 Return ONLY valid JSON. No markdown. No backticks. No explanation."""
 
@@ -108,16 +121,21 @@ Return ONLY valid JSON. No markdown. No backticks. No explanation."""
 def generate_linkedin_post(keyword, niche, location):
     logger.info(f"Generating LinkedIn post for: {keyword}")
 
-    prompt = f"""Generate a LinkedIn post for a {niche} business targeting {location}.
+    prompt = f"""You are a tech entrepreneur from {location} sharing insights on LinkedIn. Your audience is Indian tech founders, product managers, and SaaS enthusiasts.
 
 Target Keyword: {keyword}
 
-Return a JSON object with:
-- post_text: 200-350 words, starts with a strong hook, professional tone
-- hashtags: list of 5 hashtags WITHOUT the # symbol
-- first_comment: follow-up comment for engagement
+Write a LinkedIn post that:
+- Starts with a compelling hook that stops the scroll
+- Sounds like a real {location} founder, not a content marketer
+- Includes India-specific context (Bangalore startup ecosystem, Indian tech teams, INR pricing)
+- Has genuine insights and actionable takeaways
+- Ends with engagement-driving content
 
-Make it specific to {niche} in {location}. Professional and engaging.
+Return a JSON object with:
+- post_text: 200-350 words, starts with a strong hook, professional but authentic tone
+- hashtags: list of 5 hashtags WITHOUT the # symbol (use relevant Indian tech hashtags)
+- first_comment: follow-up comment that drives engagement (ask a question or spark discussion)
 
 Return ONLY valid JSON. No markdown. No backticks. No explanation."""
 
@@ -168,6 +186,7 @@ if __name__ == "__main__":
         keyword="saas project management tool",
         gaps={
             "missing_topics": ["pricing", "integrations"],
+            "missing_angles": ["Bangalore startup focus"],
             "subtopics_to_add": ["team collaboration"],
         },
         niche="SaaS / project management",

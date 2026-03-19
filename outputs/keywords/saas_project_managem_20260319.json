@@ -1,0 +1,66 @@
+[
+  {
+    "keyword": "saas project management tools",
+    "intent": "commercial",
+    "competition": "high",
+    "priority_score": 9,
+    "reasoning": "This keyword is highly relevant, has high search volume, and high competition, making it a high priority for a SaaS project management business.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "best saas project management software",
+    "intent": "commercial",
+    "competition": "high",
+    "priority_score": 9,
+    "reasoning": "This keyword has high intent to purchase or compare, high competition, and high relevance, making it a high priority.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "saas project management software",
+    "intent": "commercial",
+    "competition": "high",
+    "priority_score": 9,
+    "reasoning": "This keyword is highly relevant, has high search volume, and high competition, making it one of the highest priorities for the business.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "Best saas project management tool",
+    "intent": "commercial",
+    "competition": "high",
+    "priority_score": 8,
+    "reasoning": "This keyword has high competition, but it's a popular search term with high intent to purchase or compare tools.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "Project management software",
+    "intent": "commercial",
+    "competition": "high",
+    "priority_score": 8,
+    "reasoning": "This keyword is highly relevant but not specific to SaaS, making it a high priority due to its broad appeal and high search volume.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "saas based project management tools",
+    "intent": "commercial",
+    "competition": "medium",
+    "priority_score": 8,
+    "reasoning": "This keyword is highly relevant to the business, with medium competition, and a moderate to high priority due to its specificity to SaaS solutions.",
+    "best_platform": "gmb"
+  },
+  {
+    "keyword": "Saas project management tool free",
+    "intent": "transactional",
+    "competition": "medium",
+    "priority_score": 7,
+    "reasoning": "This keyword has medium competition and is attractive to price-sensitive customers, making it a moderate to high priority.",
+    "best_platform": "website"
+  },
+  {
+    "keyword": "SaaS Project Management course",
+    "intent": "informational",
+    "competition": "medium",
+    "priority_score": 6,
+    "reasoning": "This keyword has medium competition and is relevant to the business, making it a moderate priority for attracting potential customers looking for training.",
+    "best_platform": "linkedin"
+  }
+]
