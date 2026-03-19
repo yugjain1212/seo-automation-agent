@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Automation Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .header p { opacity: 0.8; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .card h3 { font-size: 0.9em; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+        .card .value { font-size: 2em; font-weight: bold; color: #1a1a2e; }
+        .card .value.success { color: #27ae60; }
+        .card .value.warning { color: #f39c12; }
+        .card .value.danger { color: #e74c3c; }
+        
+        .section { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; margin-bottom: 20px; color: #1a1a2e; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; }
+        tr:hover { background: #f8f9fa; }
+        
+        .score-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+        .score-a { background: #d4edda; color: #155724; }
+        .score-b { background: #fff3cd; color: #856404; }
+        .score-c { background: #ffe5d0; color: #8a2be2; }
+        .score-d { background: #f8d7da; color: #721c24; }
+        
+        .issue-list { list-style: none; }
+        .issue-list li { padding: 10px 15px; margin-bottom: 8px; border-radius: 5px; display: flex; align-items: center; }
+        .issue-list li.red { background: #fff5f5; border-left: 4px solid #e74c3c; }
+        .issue-list li.green { background: #f0fff4; border-left: 4px solid #27ae60; }
+        
+        .competitor-item { padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; }
+        .competitor-item .position { display: inline-block; background: #1a1a2e; color: white; padding: 3px 10px; border-radius: 3px; margin-right: 10px; font-size: 0.9em; }
+        .competitor-item .title { font-weight: 600; }
+        .competitor-item .url { color: #3498db; font-size: 0.9em; }
+        
+        .loading { text-align: center; padding: 50px; color: #666; }
+        .error { background: #fff5f5; border: 1px solid #e74c3c; color: #c0392b; padding: 20px; border-radius: 10px; text-align: center; }
+        
+        @media (max-width: 768px) {
+            .summary-cards { grid-template-columns: 1fr; }
+            table { font-size: 0.9em; }
+            th, td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 SEO Automation Dashboard</h1>
+        <p>Real-time SEO performance and analysis</p>
+    </div>
+    
+    <div class="container" id="dashboard">
+        <div class="loading">Loading report data...</div>
+    </div>
+
+    <script>
+        async function loadReport() {
+            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            const reportUrl = `outputs/reports/full_report_${today}.json`;
+            
+            try {
+                const response = await fetch(reportUrl);
+                if (!response.ok) {
+                    throw new Error(`Report not found: ${response.status}`);
+                }
+                const report = await response.json();
+                renderDashboard(report);
+            } catch (error) {
+                document.getElementById('dashboard').innerHTML = `
+                    <div class="error">
+                        <h2>⚠️ No Report Found</h2>
+                        <p>${error.message}</p>
+                        <p>Run the SEO agent first: <code>python main.py</code></p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderDashboard(report) {
+            const steps = report.steps || {};
+            const audit = steps.seo_audit || {};
+            const keywords = steps.keyword_research?.status === 'success' ? [] : [];
+            const competitors = steps.competitor_analysis?.status === 'success' ? [] : [];
+            const rankChanges = steps.rank_report?.status === 'success' ? [] : [];
+            
+            let html = '';
+            
+            // Summary Cards
+            html += `
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Target Keyword</h3>
+                        <div class="value">${report.seed_keyword || 'N/A'}</div>
+                    </div>
+                    <div class="card">
+                        <h3>SEO Audit Score</h3>
+                        <div class="value ${audit.score >= 90 ? 'success' : audit.score >= 75 ? 'warning' : 'danger'}">${audit.score || 0}/100</div>
+                    </div>
+                    <div class="card">
+                        <h3>Keywords Found</h3>
+                        <div class="value">${steps.keyword_research?.keywords_found || 0}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Deployed</h3>
+                        <div class="value ${steps.auto_deploy?.status === 'success' ? 'success' : 'warning'}">${steps.auto_deploy?.status === 'success' ? 'Yes' : 'No'}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Keywords Table
+            if (keywords.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>📊 Keywords Analysis</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Keyword</th>
+                                    <th>Score</th>
+                                    <th>Intent</th>
+                                    <th>Platform</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${keywords.map(kw => `
+                                    <tr>
+                                        <td>${kw.keyword}</td>
+                                        <td>${kw.priority_score}</td>
+                                        <td>${kw.intent}</td>
+                                        <td>${kw.best_platform}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // SEO Issues
+            html += `
+                <div class="section">
+                    <h2>🔍 SEO Audit Issues</h2>
+            `;
+            
+            if (audit.issues && audit.issues.length > 0) {
+                html += `<ul class="issue-list">`;
+                audit.issues.forEach(issue => {
+                    html += `<li class="red">❌ ${issue}</li>`;
+                });
+                html += `</ul>`;
+            } else {
+                html += `<ul class="issue-list"><li class="green">✅ No issues found</li></ul>`;
+            }
+            
+            if (audit.passed && audit.passed.length > 0) {
+                html += `<h3 style="margin-top: 20px;">Passed Checks:</h3><ul class="issue-list">`;
+                audit.passed.forEach(p => {
+                    html += `<li class="green">✅ ${p}</li>`;
+                });
+                html += `</ul>`;
+            }
+            
+            html += `</div>`;
+            
+            // Competitors
+            if (competitors.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>🏆 Top Competitors</h2>
+                        ${competitors.map(comp => `
+                            <div class="competitor-item">
+                                <span class="position">#${comp.position}</span>
+                                <span class="title">${comp.title}</span><br>
+                                <span class="url">${comp.url}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Rank Report
+            if (rankChanges.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>📈 Rank Report</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Keyword</th>
+                                    <th>Current</th>
+                                    <th>Previous</th>
+                                    <th>Change</th>
+                                    <th>Clicks</th>
+                                    <th>Impressions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rankChanges.map(r => `
+                                    <tr>
+                                        <td>${r.keyword}</td>
+                                        <td>${r.current_position}</td>
+                                        <td>${r.previous_position || '-'}</td>
+                                        <td>${r.position_change > 0 ? '↑' : r.position_change < 0 ? '↓' : '→'}</td>
+                                        <td>${r.clicks}</td>
+                                        <td>${r.impressions}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('dashboard').innerHTML = html;
+        }
+        
+        loadReport();
+    </script>
+</body>
+</html>
