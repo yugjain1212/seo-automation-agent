@@ -1,0 +1,23 @@
+{
+  "url": "https://example.com",
+  "target_keyword": "Best saas project management tool",
+  "seo_score": 40,
+  "grade": "D",
+  "issues": [
+    "Title length not 30-60 chars (14 chars)",
+    "Target keyword not in title",
+    "Meta description missing",
+    "Schema markup (JSON-LD) missing",
+    "Word count under 300 (21 words)",
+    "Fewer than 2 H2 subheadings (0 found)"
+  ],
+  "passed": [
+    "Title tag present",
+    "H1 tag present (1 found)",
+    "Single H1 tag (optimal)",
+    "All images have alt text"
+  ],
+  "word_count": 21,
+  "title": "Example Domain",
+  "h1": "Example Domain"
+}
