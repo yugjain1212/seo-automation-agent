@@ -102,6 +102,8 @@ def generate_gmb_post(keyword, niche, location):
 
 Target Keyword: {keyword}
 
+CRITICAL: NEVER start with "Are you a...", "As a business owner...", or "Looking for...". Start with a specific local fact, stat, or story instead.
+
 Write like a real {location} startup founder. Mention:
 - Local Bangalore context (tech hubs, startup culture, India-specific benefits)
 - Pricing in INR ("starting at ₹X/month")
@@ -124,6 +126,8 @@ def generate_linkedin_post(keyword, niche, location):
     prompt = f"""You are a tech entrepreneur from {location} sharing insights on LinkedIn. Your audience is Indian tech founders, product managers, and SaaS enthusiasts.
 
 Target Keyword: {keyword}
+
+CRITICAL: NEVER start with "Are you tired of...", "In today's world...", or "Here's how...". Start with a surprising stat about Indian SaaS teams or a personal founder story that stops the scroll.
 
 Write a LinkedIn post that:
 - Starts with a compelling hook that stops the scroll

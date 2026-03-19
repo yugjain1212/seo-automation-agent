@@ -105,16 +105,19 @@
         
         async function loadReport() {
             try {
-                // Try to load the actual report first
                 const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-                const reportUrl = `../outputs/reports/full_report_${today}.json`;
+                const reportUrl = `./full_report_${today}.json`;
+                const fallbackUrl = `./report.json`;
                 
-                const response = await fetch(reportUrl);
+                let response = await fetch(reportUrl);
+                if (!response.ok) {
+                    response = await fetch(fallbackUrl);
+                }
+                
                 if (response.ok) {
                     const report = await response.json();
                     renderDashboard(report);
                 } else {
-                    // Use sample data
                     renderDashboard(sampleData);
                     showMessage("Using sample data. Run 'python main.py' to generate real reports.");
                 }

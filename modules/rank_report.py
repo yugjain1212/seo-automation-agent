@@ -86,6 +86,8 @@ def fetch_keyword_rankings(site_url, keywords, days=28):
 
 
 def generate_rank_report(site_url, keywords):
+    today = date.today().strftime("%Y%m%d")
+
     print(f"\n📈 STEP 6: Google Search Console Rank Report")
     print("=" * 60)
 
@@ -135,7 +137,6 @@ def generate_rank_report(site_url, keywords):
 
     changes.sort(key=lambda x: x["current_position"])
 
-    today = date.today().strftime("%Y%m%d")
     output_file = f"outputs/reports/rank_report_{today}.json"
 
     report = {
