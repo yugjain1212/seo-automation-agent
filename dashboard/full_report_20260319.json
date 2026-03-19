@@ -7,7 +7,7 @@
   "steps": {
     "keyword_research": {
       "status": "success",
-      "keywords_found": 3
+      "keywords_found": 8
     },
     "competitor_analysis": {
       "status": "success",
@@ -22,7 +22,7 @@
     },
     "auto_deploy": {
       "status": "success",
-      "url": "https://github.com/yugjain1212/seo-automation-agent/blob/main/pages/best-saas-project-management-t.html"
+      "url": "https://github.com/yugjain1212/seo-automation-agent/blob/main/pages/saas-project-management-tools.html"
     },
     "rank_report": {
       "status": "success",
