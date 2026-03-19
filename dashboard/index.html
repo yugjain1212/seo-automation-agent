@@ -30,12 +30,6 @@
         th { background: #f8f9fa; font-weight: 600; color: #555; }
         tr:hover { background: #f8f9fa; }
         
-        .score-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
-        .score-a { background: #d4edda; color: #155724; }
-        .score-b { background: #fff3cd; color: #856404; }
-        .score-c { background: #ffe5d0; color: #8a2be2; }
-        .score-d { background: #f8d7da; color: #721c24; }
-        
         .issue-list { list-style: none; }
         .issue-list li { padding: 10px 15px; margin-bottom: 8px; border-radius: 5px; display: flex; align-items: center; }
         .issue-list li.red { background: #fff5f5; border-left: 4px solid #e74c3c; }
@@ -44,10 +38,18 @@
         .competitor-item { padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; }
         .competitor-item .position { display: inline-block; background: #1a1a2e; color: white; padding: 3px 10px; border-radius: 3px; margin-right: 10px; font-size: 0.9em; }
         .competitor-item .title { font-weight: 600; }
-        .competitor-item .url { color: #3498db; font-size: 0.9em; }
+        .competitor-item .url { color: #3498db; font-size: 0.9em; word-break: break-all; }
         
         .loading { text-align: center; padding: 50px; color: #666; }
         .error { background: #fff5f5; border: 1px solid #e74c3c; color: #c0392b; padding: 20px; border-radius: 10px; text-align: center; }
+        
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        .status-warning { background: #fff3cd; color: #856404; }
+        
+        .refresh-btn { background: #1a1a2e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        .refresh-btn:hover { background: #16213e; }
         
         @media (max-width: 768px) {
             .summary-cards { grid-template-columns: 1fr; }
@@ -67,34 +69,79 @@
     </div>
 
     <script>
-        async function loadReport() {
-            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-            const reportUrl = `outputs/reports/full_report_${today}.json`;
-            
-            try {
-                const response = await fetch(reportUrl);
-                if (!response.ok) {
-                    throw new Error(`Report not found: ${response.status}`);
+        // Sample data for demo
+        const sampleData = {
+            "seed_keyword": "saas project management tool",
+            "website_url": "https://example.com",
+            "niche": "SaaS / project management",
+            "location": "Bangalore, India",
+            "date": new Date().toISOString().split('T')[0],
+            "steps": {
+                "keyword_research": {
+                    "status": "success",
+                    "keywords_found": 3
+                },
+                "competitor_analysis": {
+                    "status": "success",
+                    "competitors_found": 3
+                },
+                "content_generation": {
+                    "status": "success"
+                },
+                "seo_audit": {
+                    "status": "success",
+                    "score": 40
+                },
+                "auto_deploy": {
+                    "status": "success",
+                    "url": "https://github.com/yugjain1212/seo-automation-agent"
+                },
+                "rank_report": {
+                    "status": "success",
+                    "keywords_tracked": 0
                 }
-                const report = await response.json();
-                renderDashboard(report);
-            } catch (error) {
-                document.getElementById('dashboard').innerHTML = `
-                    <div class="error">
-                        <h2>⚠️ No Report Found</h2>
-                        <p>${error.message}</p>
-                        <p>Run the SEO agent first: <code>python main.py</code></p>
-                    </div>
-                `;
             }
+        };
+        
+        async function loadReport() {
+            try {
+                // Try to load the actual report first
+                const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                const reportUrl = `../outputs/reports/full_report_${today}.json`;
+                
+                const response = await fetch(reportUrl);
+                if (response.ok) {
+                    const report = await response.json();
+                    renderDashboard(report);
+                } else {
+                    // Use sample data
+                    renderDashboard(sampleData);
+                    showMessage("Using sample data. Run 'python main.py' to generate real reports.");
+                }
+            } catch (error) {
+                renderDashboard(sampleData);
+                showMessage("Showing sample dashboard. Run 'python main.py' to generate real reports.");
+            }
+        }
+        
+        function showMessage(msg) {
+            const container = document.getElementById('dashboard');
+            container.innerHTML += `
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>ℹ️ Note:</strong> ${msg}
+                </div>
+            `;
+        }
+        
+        function getStatusBadge(status) {
+            if (status === 'success') return '<span class="status-badge status-success">✅ Success</span>';
+            if (status === 'error') return '<span class="status-badge status-error">❌ Error</span>';
+            return '<span class="status-badge status-warning">⚠️ Skipped</span>';
         }
         
         function renderDashboard(report) {
             const steps = report.steps || {};
             const audit = steps.seo_audit || {};
-            const keywords = steps.keyword_research?.status === 'success' ? [] : [];
-            const competitors = steps.competitor_analysis?.status === 'success' ? [] : [];
-            const rankChanges = steps.rank_report?.status === 'success' ? [] : [];
             
             let html = '';
             
@@ -103,7 +150,7 @@
                 <div class="summary-cards">
                     <div class="card">
                         <h3>Target Keyword</h3>
-                        <div class="value">${report.seed_keyword || 'N/A'}</div>
+                        <div class="value" style="font-size: 1.2em;">${report.seed_keyword || 'N/A'}</div>
                     </div>
                     <div class="card">
                         <h3>SEO Audit Score</h3>
@@ -115,114 +162,94 @@
                     </div>
                     <div class="card">
                         <h3>Deployed</h3>
-                        <div class="value ${steps.auto_deploy?.status === 'success' ? 'success' : 'warning'}">${steps.auto_deploy?.status === 'success' ? 'Yes' : 'No'}</div>
+                        <div class="value ${steps.auto_deploy?.status === 'success' ? 'success' : 'warning'}" style="font-size: 1.5em;">
+                            ${steps.auto_deploy?.status === 'success' ? '✅' : '❌'}
+                        </div>
                     </div>
                 </div>
             `;
             
-            // Keywords Table
-            if (keywords.length > 0) {
-                html += `
-                    <div class="section">
-                        <h2>📊 Keywords Analysis</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Keyword</th>
-                                    <th>Score</th>
-                                    <th>Intent</th>
-                                    <th>Platform</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${keywords.map(kw => `
-                                    <tr>
-                                        <td>${kw.keyword}</td>
-                                        <td>${kw.priority_score}</td>
-                                        <td>${kw.intent}</td>
-                                        <td>${kw.best_platform}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-            
-            // SEO Issues
+            // Pipeline Status
             html += `
                 <div class="section">
-                    <h2>🔍 SEO Audit Issues</h2>
+                    <h2>📋 Pipeline Status</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🔍 Keyword Research</td>
+                                <td>${getStatusBadge(steps.keyword_research?.status)}</td>
+                                <td>${steps.keyword_research?.keywords_found || 0} keywords found</td>
+                            </tr>
+                            <tr>
+                                <td>📊 Competitor Analysis</td>
+                                <td>${getStatusBadge(steps.competitor_analysis?.status)}</td>
+                                <td>${steps.competitor_analysis?.competitors_found || 0} competitors</td>
+                            </tr>
+                            <tr>
+                                <td>✍️ Content Generation</td>
+                                <td>${getStatusBadge(steps.content_generation?.status)}</td>
+                                <td>Website, GMB, LinkedIn</td>
+                            </tr>
+                            <tr>
+                                <td>🔎 SEO Audit</td>
+                                <td>${getStatusBadge(steps.seo_audit?.status)}</td>
+                                <td>Score: ${audit.score || 0}/100</td>
+                            </tr>
+                            <tr>
+                                <td>🚀 Auto Deploy</td>
+                                <td>${getStatusBadge(steps.auto_deploy?.status)}</td>
+                                <td>${steps.auto_deploy?.url ? '<a href="'+steps.auto_deploy.url+'" target="_blank">View on GitHub</a>' : 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <td>📈 Rank Report</td>
+                                <td>${getStatusBadge(steps.rank_report?.status)}</td>
+                                <td>${steps.rank_report?.keywords_tracked || 0} tracked</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             `;
             
+            // SEO Audit Details
             if (audit.issues && audit.issues.length > 0) {
-                html += `<ul class="issue-list">`;
-                audit.issues.forEach(issue => {
-                    html += `<li class="red">❌ ${issue}</li>`;
-                });
-                html += `</ul>`;
-            } else {
-                html += `<ul class="issue-list"><li class="green">✅ No issues found</li></ul>`;
+                html += `
+                    <div class="section">
+                        <h2>🔍 SEO Audit Issues</h2>
+                        <ul class="issue-list">
+                            ${audit.issues.map(issue => `<li class="red">❌ ${issue}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
             }
             
             if (audit.passed && audit.passed.length > 0) {
-                html += `<h3 style="margin-top: 20px;">Passed Checks:</h3><ul class="issue-list">`;
-                audit.passed.forEach(p => {
-                    html += `<li class="green">✅ ${p}</li>`;
-                });
-                html += `</ul>`;
-            }
-            
-            html += `</div>`;
-            
-            // Competitors
-            if (competitors.length > 0) {
                 html += `
                     <div class="section">
-                        <h2>🏆 Top Competitors</h2>
-                        ${competitors.map(comp => `
-                            <div class="competitor-item">
-                                <span class="position">#${comp.position}</span>
-                                <span class="title">${comp.title}</span><br>
-                                <span class="url">${comp.url}</span>
-                            </div>
-                        `).join('')}
+                        <h2>✅ Passed SEO Checks</h2>
+                        <ul class="issue-list">
+                            ${audit.passed.map(p => `<li class="green">✅ ${p}</li>`).join('')}
+                        </ul>
                     </div>
                 `;
             }
             
-            // Rank Report
-            if (rankChanges.length > 0) {
-                html += `
-                    <div class="section">
-                        <h2>📈 Rank Report</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Keyword</th>
-                                    <th>Current</th>
-                                    <th>Previous</th>
-                                    <th>Change</th>
-                                    <th>Clicks</th>
-                                    <th>Impressions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rankChanges.map(r => `
-                                    <tr>
-                                        <td>${r.keyword}</td>
-                                        <td>${r.current_position}</td>
-                                        <td>${r.previous_position || '-'}</td>
-                                        <td>${r.position_change > 0 ? '↑' : r.position_change < 0 ? '↓' : '→'}</td>
-                                        <td>${r.clicks}</td>
-                                        <td>${r.impressions}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
+            // Info Section
+            html += `
+                <div class="section">
+                    <h2>ℹ️ About This Project</h2>
+                    <p style="margin-bottom: 15px;"><strong>Niche:</strong> ${report.niche || 'N/A'}</p>
+                    <p style="margin-bottom: 15px;"><strong>Location:</strong> ${report.location || 'N/A'}</p>
+                    <p style="margin-bottom: 15px;"><strong>Website:</strong> <a href="${report.website_url || '#'}" target="_blank">${report.website_url || 'N/A'}</a></p>
+                    <p style="margin-bottom: 15px;"><strong>Report Date:</strong> ${report.date || 'N/A'}</p>
+                </div>
+            `;
             
             document.getElementById('dashboard').innerHTML = html;
         }
